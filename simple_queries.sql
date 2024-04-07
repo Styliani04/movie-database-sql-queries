@@ -98,3 +98,90 @@ WHERE genres = (
         GROUP BY belongsTocollection.collection_id
     ) AS max_genres_count
 );
+
+
+/*
+"Βρες και εμφάνισε, σε αλφαβητική σειρά, τις εταιρίες παραγωγής των οποίων οι ταινίες έχουν όλες λάβει rating 5 αστέρια"
+Output: A&B Producoes
+Alpha Films
+Apatow Productions
+Avenging Conscience
+Buster Keaton Productions
+Camelot Productions
+Canal Plus Group
+CCC-Filmkunst
+Chaplin Film Productions Ltd.
+Documento Film
+First National Bank of Chicago (London Branch)
+Iguana Producciones
+Ixtlan Productions
+Joseph M. Schenck Productions
+Kasander & Wigman Productions
+Kenneth Madsen Filmproduktion A/S
+Kuzui Enterprises
+Les Films Ariane
+Main Street Movie Company
+Michael Todd Company
+Nederlands Fonds voor de Film
+Nimbus Film Productions
+Nordic Film
+Popaganda Films
+Sascha-Verleih
+Tandem Communications
+Woodline Films Ltd.
+*/
+SELECT productioncompany.name /*, AVG(ratings.rating) AS average_rating */
+FROM productioncompany LEFT OUTER JOIN hasProductioncompany ON productioncompany.id = hasProductioncompany.pc_id 
+JOIN movie ON movie.id = hasProductioncompany.movie_id
+JOIN ratings ON movie.id = ratings.movie_id
+GROUP BY productioncompany.name
+HAVING AVG(ratings.rating) = 50;
+
+/*Βρες ποιές ταινίες σχετίζονται με σκύλους και έχουν rating πάνω από 3,5 αστέρια"
+Output:
+As Good as It Gets
+Cape Fear
+Dawn of the Dead
+Hulk
+Lassie Come Home
+Michael
+Shiloh
+The Wrong Trousers
+Three Colors: Red
+*/
+SELECT DISTINCT title /*, AVG(ratings.rating) AS review*/
+FROM movie JOIN HasKeyword ON movie.id = HasKeyword.Movie_ID
+JOIN Keyword ON HasKeyword.Keyword_ID = Keyword.ID
+JOIN ratings ON movie.id = ratings.movie_id
+WHERE Keyword.name = 'dog'
+GROUP BY title
+HAVING AVG(ratings.rating) >= 35;
+
+/*"Βρες όλες τις ταινίες οι οποίες είναι στα ιταλικά (original γλώσσα) και σχετίζονται με τον πόλεμο"
+Output:
+And the Ship Sails On
+Seven Beauties
+The Leopard 
+*/
+SELECT DISTINCT title 
+FROM movie JOIN HasKeyword ON movie.id = HasKeyword.Movie_ID
+JOIN Keyword ON HasKeyword.Keyword_ID = Keyword.ID
+WHERE Keyword.name = 'war'
+AND movie.original_language = 'it'
+GROUP BY title
+
+/*"Βρες τις ταινίες που έχουν για σκηνοθέτη τον Quentin Tarantino και έχουν rating πάνω από 3 αστέρια"
+Output:
+Four Rooms
+Jackie Brown
+Kill Bill: Vol. 1
+Pulp Fiction
+Reservoir Dogs
+*/
+SELECT DISTINCT movie.title, AVG(ratings.rating) AS average_rating
+FROM movie_crew
+JOIN movie ON movie_crew.movie_id = movie.id
+JOIN ratings ON movie.id = ratings.movie_id
+WHERE movie_crew.job = 'Director' AND movie_crew.name = 'Quentin Tarantino'
+GROUP BY movie.title
+HAVING AVG(ratings.rating) > 30;
