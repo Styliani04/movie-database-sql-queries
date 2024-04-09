@@ -18,7 +18,7 @@ The Thomas Crown Affair	1999-08-06	43,87096774193548	62
 Once Were Warriors	1994-09-02	43,032786885245905	244
 Hard Target	1993-08-20	42,77777777777778	54
 */
-SELECT TOP(5) title, release_date, AVG(ratings.rating) AS review, COUNT(user_id) AS people_rated
+SELECT TOP(5) title, release_date, AVG(ratings.rating)/10 AS review, COUNT(user_id) AS people_rated
 FROM movie JOIN ratings ON movie.id = ratings.movie_id
 WHERE year(release_date) BETWEEN 1990 AND 2000
 GROUP BY movie_id, title, release_date
@@ -185,3 +185,26 @@ JOIN ratings ON movie.id = ratings.movie_id
 WHERE movie_crew.job = 'Director' AND movie_crew.name = 'Quentin Tarantino'
 GROUP BY movie.title
 HAVING AVG(ratings.rating) > 30;
+
+/*"Βρες την/τις ταινία/ες με τις χειρότερες κριτικές".
+Output:
+Crimson Tide	0,5
+Dude, Where�s My Car?	0,5
+El Dorado	0,5
+Finder's Fee	0,5
+Prick Up Your Ears	0,5
+Stranded	0,5
+Tough and Deadly	0,5
+Vatel	0,5
+*/
+SELECT title, AVG(rating)/10 AS review
+FROM movie JOIN ratings ON movie.id = ratings.movie_id
+GROUP BY title
+HAVING AVG(rating)/10 = (
+    SELECT MIN(revs) 
+    FROM (
+        SELECT movie_id, AVG(rating)/10 AS revs
+        FROM ratings
+        GROUP BY movie_id
+    ) AS sub
+);
