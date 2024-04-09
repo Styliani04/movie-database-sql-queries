@@ -74,7 +74,7 @@ WHERE members = (
 );
 
 /*
-"Βρες ποια συλλογή ταινιών έχει τα περισσότερα είδη ταινιών".
+"Βρες ποια συλλογή ταινιών έχει τα περισσότερα είδη".
 Output: Pokémon Collection	45
 */
 SELECT collection_name, genres
@@ -86,7 +86,7 @@ FROM (
     JOIN hasGenre ON movie.id = hasGenre.movie_id
     JOIN genre ON genre.id = hasGenre.genre_id
     GROUP BY c.name, c.id 
-) AS min_genres
+) AS max_genres
 WHERE genres = (
     SELECT MAX(genres_count)
     FROM (
@@ -207,4 +207,25 @@ HAVING AVG(rating)/10 = (
         FROM ratings
         GROUP BY movie_id
     ) AS sub
+);
+
+/*"Βρες την συλλογή με τον μεγαλύτερο μέσο όρο χρονικής διάρκειας ταινιών".
+Οutput: Lonesome Dove Collection	3400
+*/
+SELECT collection_name, average_runtime
+FROM (
+    SELECT c.name AS collection_name, c.id, AVG(movie.runtime) AS average_runtime
+    FROM belongsTocollection
+    LEFT OUTER JOIN collection AS c ON c.id = belongsTocollection.collection_id
+    JOIN movie ON movie.id = belongsTocollection.movie_id
+    GROUP BY c.name, c.id 
+) AS max_runtime
+WHERE average_runtime = (
+    SELECT MAX(runtime_count)
+    FROM (
+        SELECT belongsTocollection.collection_id, AVG(movie.runtime) AS runtime_count
+        FROM belongsTocollection
+        JOIN movie ON movie.id = belongsTocollection.movie_id
+        GROUP BY belongsTocollection.collection_id
+    ) AS max_runtime_count
 );
