@@ -12,11 +12,11 @@ ORDER BY AVG(budget) DESC;
 /*
 "Βρες τις 5 ταινίες με τις καλύτερες κριτικές οι οποίες κυκλοφόρησαν το διάστημα 1990-2000 και έχουν πάνω απο 50 κριτικές, ταξινομημένες απο την "καλύτερη" στην "χειρότερη"."
 Output: 
-Sleepless in Seattle	1993-06-24	44,875	200
-The Million Dollar Hotel	2000-02-09	44,87138263665595	311
-The Thomas Crown Affair	1999-08-06	43,87096774193548	62
-Once Were Warriors	1994-09-02	43,032786885245905	244
-Hard Target	1993-08-20	42,77777777777778	54
+Sleepless in Seattle	1993-06-24	4,4875	200
+The Million Dollar Hotel	2000-02-09	4,487138263665595	311
+The Thomas Crown Affair	1999-08-06	4,387096774193548	62
+Once Were Warriors	1994-09-02	4,303278688524591	244
+Hard Target	1993-08-20	4,277777777777778	54
 */
 SELECT TOP(5) title, release_date, AVG(ratings.rating)/10 AS review, COUNT(user_id) AS people_rated
 FROM movie JOIN ratings ON movie.id = ratings.movie_id
@@ -130,7 +130,7 @@ Sascha-Verleih
 Tandem Communications
 Woodline Films Ltd.
 */
-SELECT productioncompany.name /*, AVG(ratings.rating) AS average_rating */
+SELECT productioncompany.name 
 FROM productioncompany LEFT OUTER JOIN hasProductioncompany ON productioncompany.id = hasProductioncompany.pc_id 
 JOIN movie ON movie.id = hasProductioncompany.movie_id
 JOIN ratings ON movie.id = ratings.movie_id
@@ -139,17 +139,17 @@ HAVING AVG(ratings.rating) = 50;
 
 /*Βρες ποιές ταινίες σχετίζονται με σκύλους και έχουν rating πάνω από 3,5 αστέρια"
 Output:
-As Good as It Gets
-Cape Fear
-Dawn of the Dead
-Hulk
-Lassie Come Home
-Michael
-Shiloh
-The Wrong Trousers
-Three Colors: Red
+As Good as It Gets	3,5
+Cape Fear	3,75
+Dawn of the Dead	3,8861788617886175
+Hulk	4,285714285714286
+Lassie Come Home	4,363636363636363
+Michael	3,6666666666666665
+Shiloh	3,5789473684210527
+The Wrong Trousers	3,5645161290322585
+Three Colors: Red	3,945175438596491
 */
-SELECT DISTINCT title /*, AVG(ratings.rating) AS review*/
+SELECT DISTINCT title , AVG(ratings.rating)/10 AS review
 FROM movie JOIN HasKeyword ON movie.id = HasKeyword.Movie_ID
 JOIN Keyword ON HasKeyword.Keyword_ID = Keyword.ID
 JOIN ratings ON movie.id = ratings.movie_id
@@ -172,13 +172,13 @@ GROUP BY title
 
 /*"Βρες τις ταινίες που έχουν για σκηνοθέτη τον Quentin Tarantino και έχουν rating πάνω από 3 αστέρια"
 Output:
-Four Rooms
-Jackie Brown
-Kill Bill: Vol. 1
-Pulp Fiction
-Reservoir Dogs
+Four Rooms	3,2678571428571432
+Jackie Brown	4,5
+Kill Bill: Vol. 1	3,0441176470588234
+Pulp Fiction	3,9166666666666665
+Reservoir Dogs	3,4673202614379086
 */
-SELECT DISTINCT movie.title, AVG(ratings.rating) AS average_rating
+SELECT DISTINCT movie.title, AVG(ratings.rating)/10 AS average_rating
 FROM movie_crew
 JOIN movie ON movie_crew.movie_id = movie.id
 JOIN ratings ON movie.id = ratings.movie_id
